@@ -1,0 +1,28 @@
+{
+  "name": "succubus-realm",
+  "version": "1.0.0",
+  "description": "魅惑のサキュバスマッチングアプリ",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "install-deps": "npm install express chokidar ws dotenv"
+  },
+  "keywords": [
+    "succubus",
+    "matching",
+    "game",
+    "hot-reload"
+  ],
+  "author": "Kiro",
+  "license": "MIT",
+  "dependencies": {
+    "chokidar": "^3.6.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "ws": "^8.18.3"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
