@@ -55,6 +55,29 @@ npm run dev
 npm start
 ```
 
+### Dockerでの起動
+
+Dockerがインストールされている場合、以下のコマンドでコンテナをビルドして実行できます。
+
+1.  **Dockerイメージをビルド**
+
+    ```bash
+    docker build -t succubus-realm .
+    ```
+
+2.  **Dockerコンテナを実行**
+
+    コンテナを起動する際に、ホストマシンからアクセスできるように環境変数 `HOST` を `0.0.0.0` に設定します。
+
+    ```bash
+    docker run -d -p 3000:3000 -e HOST=0.0.0.0 succubus-realm
+    ```
+
+    ブラウザで `http://localhost:3000` にアクセスしてください。
+
+    > **Note:**
+    > `-e HOST=0.0.0.0` を指定することで、Dockerコンテナ内で実行されているアプリケーションが、コンテナの外部からの接続を受け付けるようになります。これにより、ホストマシン（あなたのPC）のブラウザから `localhost:3000` でアクセスできるようになります。
+
 ## 🛠️ 設定
 
 ### 環境変数
@@ -96,6 +119,7 @@ succubus-realm/
 ├── succubi-data.json   # サキュバスデータ
 ├── .env.example        # 環境変数テンプレート
 ├── .gitignore          # Git除外設定
+├── Dockerfile          # Docker設定ファイル
 └── README.md           # このファイル
 ```
 
