@@ -111,6 +111,19 @@ Thumbs.db
 *.swo
 *~
 
+# Test results and reports
+test-results/
+*.test-results.json
+*-test-results.json
+test-results-*.json
+junit.xml
+coverage/
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+
 # Config files (will be created separately)
 config.json
 config.local.json
