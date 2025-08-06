@@ -1,0 +1,39 @@
+{
+  "testCharacters": [
+    {
+      "id": "test-char-1",
+      "name": "テストサキュバス1",
+      "description": "E2Eテスト用のキャラクター1",
+      "image": "test-image-1.jpg",
+      "age": 25,
+      "type": "クール系"
+    },
+    {
+      "id": "test-char-2",
+      "name": "テストサキュバス2",
+      "description": "E2Eテスト用のキャラクター2",
+      "image": "test-image-2.jpg",
+      "age": 22,
+      "type": "可愛い系"
+    },
+    {
+      "id": "test-char-3",
+      "name": "テストサキュバス3",
+      "description": "E2Eテスト用のキャラクター3",
+      "image": "test-image-3.jpg",
+      "age": 28,
+      "type": "セクシー系"
+    }
+  ],
+  "testLikes": {
+    "test-char-1": 10,
+    "test-char-2": 5,
+    "test-char-3": 15
+  },
+  "testHarem": [
+    {
+      "characterId": "test-char-1",
+      "addedAt": "2024-01-01T00:00:00.000Z"
+    }
+  ]
+}

@@ -109,14 +109,24 @@ succubus-realm/
 │   └── specs/          # 機能仕様書
 ├── .vscode/            # VS Code設定
 ├── node_modules/       # npm依存関係
+├── tests/              # テストディレクトリ
+│   ├── unit/           # 単体テスト
+│   ├── integration/    # 統合テスト
+│   ├── e2e/            # E2Eテスト
+│   ├── __fixtures__/   # テストデータ
+│   ├── __helpers__/    # テストヘルパー
+│   └── test-setup.js   # テストセットアップ
 ├── config.js           # アプリケーション設定
 ├── server.js           # Express サーバー
 ├── package.json        # プロジェクト設定
 ├── package-lock.json   # 依存関係ロック
+├── vitest.config.js    # Vitestテスト設定
+├── playwright.config.js # Playwrightテスト設定
 ├── index.html          # メインHTML
 ├── style.css           # スタイルシート
 ├── script.js           # クライアントサイドJS
 ├── succubi-data.json   # サキュバスデータ
+├── likes-data.json     # いいねデータ
 ├── .env.example        # 環境変数テンプレート
 ├── .gitignore          # Git除外設定
 ├── Dockerfile          # Docker設定ファイル
@@ -150,11 +160,62 @@ succubus-realm/
 
 クライアントとサーバー間でリアルタイム通信を行い、ファイル変更を即座に反映します。
 
+## 🧪 テスト
+
+### テスト構造
+
+```
+tests/
+├── unit/                          # 単体テスト
+│   ├── like-manager.test.js
+│   └── like-manager-validation.test.js
+├── integration/                   # 統合テスト
+│   ├── api/
+│   │   ├── likes-api.test.js
+│   │   └── characters-api.test.js
+│   ├── data-persistence.test.js
+│   ├── data-persistence-vitest.test.js
+│   ├── data-persistence-system-restart.test.js
+│   ├── error-handling.test.js
+│   └── main-integration.test.js
+├── e2e/                          # E2Eテスト (Playwright)
+│   ├── user-flows/
+│   │   ├── character-swiping.spec.js
+│   │   ├── like-functionality.spec.js
+│   │   └── modal-interactions.spec.js
+│   ├── fixtures/
+│   │   └── test-data.json
+│   └── page-objects/
+│       ├── main-page.js
+│       └── character-modal.js
+├── __fixtures__/                 # 共通テストデータ
+│   ├── characters.json
+│   └── likes.json
+├── __helpers__/                  # テストヘルパー
+│   ├── test-server.js
+│   └── test-utils.js
+└── test-setup.js                # グローバル設定
+```
+
+### テストコマンド
+
+- `npm test` - 単体・統合テスト実行 (Vitest)
+- `npm run test:watch` - テスト監視モード
+- `npm run test:e2e` - E2Eテスト実行 (Playwright)
+- `npm run test:coverage` - カバレッジレポート生成
+
+### テスト環境
+
+- **Unit/Integration**: Vitest + jsdom
+- **E2E**: Playwright (Chromium, Firefox, WebKit対応)
+- **Coverage**: v8プロバイダー (目標: 70%以上)
+
 ## 📝 スクリプト
 
 - `npm start` - 本番環境でサーバー起動
 - `npm run dev` - 開発環境でサーバー起動
 - `npm run install-deps` - 必要な依存関係をインストール
+- `npm run install-test-deps` - テスト依存関係をインストール
 
 ## 🤝 コントリビューション
 
