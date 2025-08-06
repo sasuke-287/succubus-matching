@@ -1,0 +1,84 @@
+Succubus Realm - 依存パッケージライセンス情報
+==============================================
+
+このプロジェクトは以下のオープンソースライブラリを使用しています：
+
+## 本体依存関係 (Production Dependencies)
+
+### Express.js Framework
+- express@4.21.2 - MIT License
+  Copyright (c) 2009-2014 TJ Holowaychuk <tj@vision-media.ca>
+  Copyright (c) 2013-2014 Roman Shtylman <shtylman+expressjs@gmail.com>
+  Copyright (c) 2014-2015 Douglas Christopher Wilson <doug@somethingdoug.com>
+  Repository: https://github.com/expressjs/express
+
+### ファイル監視
+- chokidar@3.6.0 - MIT License
+  Copyright (c) 2012-2019 Paul Miller (https://paulmillr.com), Elan Shanker
+  Repository: https://github.com/paulmillr/chokidar
+
+### 環境変数管理
+- dotenv@16.6.1 - BSD-2-Clause License
+  Copyright (c) 2015, Scott Motte
+  Repository: https://github.com/motdotla/dotenv
+
+### HTTP クライアント
+- node-fetch@3.3.2 - MIT License
+  Copyright (c) 2016 - 2020 Node Fetch Team
+  Repository: https://github.com/node-fetch/node-fetch
+
+### WebSocket
+- ws@8.18.3 - MIT License
+  Copyright (c) 2011 Einar Otto Stangvik <einaros@gmail.com>
+  Repository: https://github.com/websockets/ws
+
+## 開発依存関係 (Development Dependencies)
+
+### テストフレームワーク
+- vitest@1.6.1 - MIT License
+  Copyright (c) 2021-Present Anthony Fu <https://github.com/antfu>
+  Copyright (c) 2021-Present Matias Capeletto <https://github.com/patak-dev>
+  Repository: https://github.com/vitest-dev/vitest
+
+- @vitest/ui@1.6.1 - MIT License
+  Repository: https://github.com/vitest-dev/vitest
+
+### E2Eテスト
+- playwright@1.54.1 - Apache-2.0 License
+  Copyright Microsoft Corporation
+  Repository: https://github.com/microsoft/playwright
+
+- @playwright/test@1.54.1 - Apache-2.0 License
+  Repository: https://github.com/microsoft/playwright
+
+### DOM環境
+- jsdom@23.2.0 - MIT License
+  Repository: https://github.com/jsdom/jsdom
+
+## ライセンス分布
+
+- MIT License: 208パッケージ
+- ISC License: 13パッケージ  
+- Apache-2.0 License: 5パッケージ
+- BSD-2-Clause License: 3パッケージ
+- BSD-3-Clause License: 3パッケージ
+- MIT-0 License: 1パッケージ
+- CC0-1.0 License: 1パッケージ
+
+## 注意事項
+
+このプロジェクトで使用されているすべてのオープンソースライブラリは、
+それぞれのライセンス条項に従って使用されています。
+各ライブラリの詳細なライセンス情報については、
+node_modules内の各パッケージのLICENSEファイルを参照してください。
+
+## ライセンス全文の参照
+
+各依存パッケージの完全なライセンス文書は以下の場所で確認できます：
+- node_modules/[パッケージ名]/LICENSE
+- node_modules/[パッケージ名]/LICENSE.md
+- node_modules/[パッケージ名]/license
+
+## 生成日時
+
+このファイルは 2025年8月6日 に自動生成されました。
