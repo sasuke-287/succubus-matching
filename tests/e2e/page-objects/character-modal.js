@@ -53,8 +53,15 @@ export class CharacterModal {
    * いいね数を取得
    */
   async getLikeCount() {
-    const text = await this.likeCount.textContent();
-    return parseInt(text.replace(/[^\d]/g, '')) || 0;
+    try {
+      await this.likeCount.waitFor({ timeout: 5000 });
+      const text = await this.likeCount.textContent();
+      const numericValue = Number(text.replace(/[^0-9]/g, ''));
+      return isNaN(numericValue) ? 0 : numericValue;
+    } catch (error) {
+      console.warn('いいね数の取得に失敗:', error.message);
+      return 0;
+    }
   }
 
   /**

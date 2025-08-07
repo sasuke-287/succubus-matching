@@ -11,7 +11,7 @@ test.describe('キャラクタースワイプ機能', () => {
 
   test('アプリケーションが正常に起動する', async ({ page }) => {
     // ページタイトルの確認
-    await expect(page).toHaveTitle(/Succubus Matching/i);
+    await expect(page).toHaveTitle(/Succubus Realm/i);
     
     // 必要な要素が表示されることを確認
     await expect(mainPage.characterCard).toBeVisible();

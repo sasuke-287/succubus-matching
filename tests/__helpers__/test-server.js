@@ -15,6 +15,23 @@ export function createTestServer(options = {}) {
   const port = options.port || 3001;
   let server = null;
 
+  // テストデータを起動時に一度読み込み
+  let testCharactersData, testLikesData;
+  try {
+    const charactersFile = JSON.parse(
+      readFileSync(path.join(process.cwd(), 'tests/__fixtures__/characters.json'), 'utf8')
+    );
+    testCharactersData = charactersFile.testCharacters;
+
+    const likesFile = JSON.parse(
+      readFileSync(path.join(process.cwd(), 'tests/__fixtures__/likes.json'), 'utf8')
+    );
+    testLikesData = likesFile.initialLikes;
+  } catch (error) {
+    console.error('テストフィクスチャファイルの読み込みに失敗:', error);
+    throw error;
+  }
+
   // JSONパース設定
   app.use(express.json());
 
@@ -23,17 +40,11 @@ export function createTestServer(options = {}) {
 
   // テスト用APIエンドポイント
   app.get('/api/test-characters', (req, res) => {
-    const testData = JSON.parse(
-      readFileSync(path.join(process.cwd(), 'tests/__fixtures__/characters.json'), 'utf8')
-    );
-    res.json(testData.testCharacters);
+    res.json(testCharactersData);
   });
 
   app.get('/api/test-likes', (req, res) => {
-    const testData = JSON.parse(
-      readFileSync(path.join(process.cwd(), 'tests/__fixtures__/likes.json'), 'utf8')
-    );
-    res.json(testData.initialLikes);
+    res.json(testLikesData);
   });
 
   // サーバー制御メソッド
