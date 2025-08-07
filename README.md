@@ -44,6 +44,7 @@ copy .env.example .env
 ### 開発サーバーの起動
 
 ```bash
+# 開発環境で起動（ホットリロード有効）
 npm run dev
 ```
 
@@ -52,6 +53,7 @@ npm run dev
 ### 本番環境での起動
 
 ```bash
+# 本番環境で起動（セキュリティ機能有効）
 npm start
 ```
 
@@ -80,25 +82,43 @@ Dockerがインストールされている場合、以下のコマンドでコ�
 
 ## 🛠️ 設定
 
+### 環境別設定システム
+
+アプリケーションは環境別に設定が分離されています：
+
+- `config/development.js` - 開発環境設定
+- `config/production.js` - 本番環境設定  
+- `config/test.js` - テスト環境設定
+- `config/base.js` - 共通設定
+
 ### 環境変数
 
 `.env`ファイルで以下の設定が可能です：
 
 ```env
-PORT=3000          # サーバーポート
-HOST=localhost     # サーバーホスト
-NODE_ENV=development  # 環境設定
-DEBUG=false        # デバッグモード
+# 環境設定
+NODE_ENV=development    # 環境の指定
+PORT=3000              # サーバーポート
+HOST=localhost         # サーバーホスト
+
+# セキュリティ設定
+ENABLE_CSP=false       # CSPヘッダーの有効化
+SECURITY_STRICT_MODE=false  # 厳格モード
+
+# ログ設定
+LOG_LEVEL=debug        # ログレベル
+LOG_TO_CONSOLE=true    # コンソール出力
 ```
 
-### 設定ファイル
+### セキュリティ機能
 
-`config.js`でアプリケーションの詳細設定を変更できます：
+本番環境では以下のセキュリティ機能が自動的に有効になります：
 
-- サーバー設定（ポート、ホスト）
-- ファイル監視設定（監視対象、除外パターン）
-- WebSocket 設定（タイムアウト、ハートビート）
-- 開発環境設定（ホットリロード、ログレベル）
+- **CSP (Content Security Policy)** - XSS攻撃対策
+- **セキュリティヘッダー** - 各種攻撃対策
+- **HTTPS強制リダイレクト** - 安全な通信の確保
+- **レート制限** - DoS攻撃対策
+- **入力値検証** - インジェクション攻撃対策
 
 ## 📁 プロジェクト構成
 
@@ -109,7 +129,14 @@ succubus-realm/
 │   └── specs/          # 機能仕様書
 ├── .vscode/            # VS Code設定
 ├── node_modules/       # npm依存関係
-├── config.js           # アプリケーション設定
+├── config/             # 環境別設定フォルダ
+│   ├── base.js         # 共通設定
+│   ├── development.js  # 開発環境設定
+│   ├── production.js   # 本番環境設定
+│   ├── test.js         # テスト環境設定
+│   └── index.js        # 設定読み込みヘルパー
+├── middleware/         # ミドルウェアフォルダ
+│   └── security.js     # セキュリティミドルウェア
 ├── server.js           # Express サーバー
 ├── package.json        # プロジェクト設定
 ├── package-lock.json   # 依存関係ロック
@@ -117,6 +144,7 @@ succubus-realm/
 ├── style.css           # スタイルシート
 ├── script.js           # クライアントサイドJS
 ├── succubi-data.json   # サキュバスデータ
+├── likes-data.json     # いいねデータ
 ├── .env.example        # 環境変数テンプレート
 ├── .gitignore          # Git除外設定
 ├── Dockerfile          # Docker設定ファイル
