@@ -147,6 +147,20 @@ function createRateLimit() {
   const WINDOW_MS = 15 * 60 * 1000; // 15分
   const MAX_REQUESTS = 100;
   
+  // 定期的にメモリをクリーンアップ（1時間ごと）
+  setInterval(() => {
+    const now = Date.now();
+    const windowStart = now - WINDOW_MS;
+    for (const [ip, timestamps] of requests.entries()) {
+      const valid = timestamps.filter(t => t > windowStart);
+      if (valid.length === 0) {
+        requests.delete(ip);
+      } else {
+        requests.set(ip, valid);
+      }
+    }
+  }, 60 * 60 * 1000);
+  
   return (req, res, next) => {
     const config = req.app.locals.config;
     

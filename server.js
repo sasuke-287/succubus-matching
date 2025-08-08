@@ -11,6 +11,8 @@ const fs = require("fs").promises;
 const config = require("./config");
 
 const app = express();
+// プロキシ環境での適切なHTTPS判定のため信頼設定を有効化
+app.set('trust proxy', true);
 // 設定をアプリケーションローカルに保存
 app.locals.config = config;
 
