@@ -5,15 +5,34 @@ const express = require("express");
 const path = require("path");
 const chokidar = require("chokidar");
 const { WebSocketServer } = require("ws");
+const securityMiddleware = require('./middleware/security');
 const http = require("http");
 const fs = require("fs").promises;
 const config = require("./config");
 
 const app = express();
-const PORT = config.server.port;
+// 設定をアプリケーションローカルに保存
+app.locals.config = config;
 
-// JSONボディパーサーを追加
-app.use(express.json());
+// セキュリティミドルウェアを適用
+if (config.security) {
+  app.use(securityMiddleware.forceHTTPS);
+  app.use(securityMiddleware.setSecurityHeaders);
+  app.use(securityMiddleware.logSecurityEvents);
+  app.use(securityMiddleware.rateLimit);
+}
+
+// JSONパーサーミドルウェア
+app.use(express.json({ limit: '10mb' }));
+
+// セキュリティ検証ミドルウェア
+if (config.security && config.security.strictMode) {
+  app.use(securityMiddleware.validateRequestBody);
+}
+const PORT = config.server.port;
+const HOST = config.server.host;
+
+
 
 // 静的ファイルを提供
 app.use(express.static("."));
@@ -652,9 +671,22 @@ watcher.on("change", (filePath) => {
 });
 
 server.listen(PORT, config.server.host, async () => {
-  console.log(`🚀 ${config.app.name} 開発サーバーが起動しました: http://${config.server.host}:${PORT}`);
-  console.log("📁 ファイル監視中...");
-  console.log("💡 ファイルを変更すると自動的にブラウザがリロードされます");
+  const protocol = config.security && config.security.forceHTTPS ? 'https' : 'http';
+  console.log(`🚀 ${config.app.name} (${config.environment}) サーバーが起動しました: ${protocol}://${HOST}:${PORT}`);
+  
+  if (config.hotReload && config.hotReload.enabled) {
+    console.log("📁 ファイル監視中...");
+    console.log("💡 ファイルを変更すると自動的にブラウザがリロードされます");
+  }
+  
+  // 環境別のメッセージ表示
+  if (config.isDevelopment) {
+    console.log("🔧 開発モード - デバッグ機能が有効です");
+  } else if (config.isProduction) {
+    console.log("🔒 本番モード - セキュリティ機能が有効です");
+  } else if (config.isTest) {
+    console.log("🧪 テストモード");
+  }
   
   // システム状態をログに記録
   logSystemStatus();
@@ -686,9 +718,20 @@ server.listen(PORT, config.server.host, async () => {
     console.error('Promise:', promise);
   });
   
-  if (config.development.debug) {
+  if (config.debug && config.debug.enabled) {
     console.log("🐛 デバッグモードが有効です");
     logInfo("エラー監視とシステム状態監視が有効になりました");
+  }
+  
+  // セキュリティ機能の状態表示
+  if (config.security) {
+    const securityFeatures = [];
+    if (config.security.enableCSP) securityFeatures.push('CSP');
+    if (config.security.forceHTTPS) securityFeatures.push('HTTPS強制');
+    if (config.security.strictMode) securityFeatures.push('厳格モード');
+    if (securityFeatures.length > 0) {
+      console.log(`🔐 セキュリティ機能: ${securityFeatures.join(', ')}`);
+    }
   }
 });
 
