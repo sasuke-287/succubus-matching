@@ -11,11 +11,23 @@ module.exports = {
 
   // セキュリティ設定
   security: {
-    enableCSP: false,
-    strictMode: false,
-    forceHTTPS: false,
-    logSecurityEvents: true,
-    enableHelmet: false
+    enableCSP: process.env.ENABLE_CSP === 'true',
+    strictMode: process.env.SECURITY_STRICT_MODE === 'true',
+    forceHTTPS: process.env.ENABLE_HTTPS_REDIRECT === 'true',
+    logSecurityEvents: process.env.LOG_SECURITY_EVENTS !== 'false',
+    enableHelmet: process.env.ENABLE_HELMET === 'true',
+    // レート制限設定
+    rateLimit: {
+      windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
+      maxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 200
+    },
+    // セキュリティヘッダー
+    headers: {
+      'Content-Security-Policy': process.env.CONTENT_SECURITY_POLICY || "default-src 'self' 'unsafe-eval' 'unsafe-inline'; img-src 'self' data: https:; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'",
+      'X-Frame-Options': process.env.X_FRAME_OPTIONS || 'SAMEORIGIN',
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': process.env.REFERRER_POLICY || 'no-referrer-when-downgrade'
+    }
   },
 
   // ログ設定

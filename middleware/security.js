@@ -144,15 +144,15 @@ function validateRequestBody(req, res, next) {
  */
 function createRateLimit() {
   const requests = new Map();
-  const WINDOW_MS = 15 * 60 * 1000; // 15分
-  const MAX_REQUESTS = 100;
   
   // 定期的にメモリをクリーンアップ（1時間ごと）
   setInterval(() => {
     const now = Date.now();
-    const windowStart = now - WINDOW_MS;
+    // 最大ウィンドウ時間で古いエントリをクリーンアップ
+    const maxWindowStart = now - (60 * 60 * 1000); // 1時間前
+    
     for (const [ip, timestamps] of requests.entries()) {
-      const valid = timestamps.filter(t => t > windowStart);
+      const valid = timestamps.filter(t => t > maxWindowStart);
       if (valid.length === 0) {
         requests.delete(ip);
       } else {
@@ -168,6 +168,9 @@ function createRateLimit() {
       return next();
     }
     
+    const WINDOW_MS = config.security.rateLimit?.windowMs || 15 * 60 * 1000;
+    const MAX_REQUESTS = config.security.rateLimit?.maxRequests || 100;
+    
     const ip = req.ip;
     const now = Date.now();
     const windowStart = now - WINDOW_MS;
@@ -180,6 +183,7 @@ function createRateLimit() {
       return res.status(429).json({ error: 'リクエストが多すぎます。しばらく待ってから再試行してください。' });
     }
     
+    // 新しいリクエストを記録
     validRequests.push(now);
     requests.set(ip, validRequests);
     
