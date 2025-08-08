@@ -1,0 +1,20 @@
+{
+  "initialLikes": {
+    "fixture-char-1": 0,
+    "fixture-char-2": 5, 
+    "fixture-char-3": 10
+  },
+  "updatedLikes": {
+    "fixture-char-1": 1,
+    "fixture-char-2": 6,
+    "fixture-char-3": 11
+  },
+  "emptyLikes": {},
+  "bulkLikes": {
+    "char1": 100,
+    "char2": 200,
+    "char3": 300,
+    "char4": 400,
+    "char5": 500
+  }
+}

@@ -8,15 +8,29 @@ export default defineConfig({
     testTimeout: 10000,
     hookTimeout: 10000,
     teardownTimeout: 10000,
+    include: [
+      'tests/unit/**/*.test.js',
+      'tests/integration/**/*.test.js'
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules/',
-        'tests/',
+        'tests/__fixtures__/',
+        'tests/__helpers__/',
+        'tests/e2e/',
         'coverage/',
         '*.config.js'
-      ]
+      ],
+      thresholds: {
+        global: {
+          branches: 70,
+          functions: 70,
+          lines: 70,
+          statements: 70
+        }
+      }
     }
   },
   server: {

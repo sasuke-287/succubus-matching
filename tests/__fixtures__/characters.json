@@ -1,0 +1,43 @@
+{
+  "testCharacters": [
+    {
+      "id": "fixture-char-1",
+      "name": "フィクスチャーサキュバス1",
+      "description": "テスト用キャラクター1の説明",
+      "image": "fixture-image-1.jpg",
+      "age": 25,
+      "type": "クール系",
+      "likes": 0
+    },
+    {
+      "id": "fixture-char-2", 
+      "name": "フィクスチャーサキュバス2",
+      "description": "テスト用キャラクター2の説明",
+      "image": "fixture-image-2.jpg",
+      "age": 22,
+      "type": "可愛い系",
+      "likes": 5
+    },
+    {
+      "id": "fixture-char-3",
+      "name": "フィクスチャーサキュバス3", 
+      "description": "テスト用キャラクター3の説明",
+      "image": "fixture-image-3.jpg",
+      "age": 28,
+      "type": "セクシー系",
+      "likes": 10
+    }
+  ],
+  "emptyCharacterList": [],
+  "singleCharacter": [
+    {
+      "id": "single-char",
+      "name": "単体テストキャラクター",
+      "description": "単体テスト用",
+      "image": "single.jpg", 
+      "age": 20,
+      "type": "テスト系",
+      "likes": 1
+    }
+  ]
+}
