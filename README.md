@@ -164,7 +164,7 @@ succubus-realm/
 
 ### テスト構造
 
-```
+```text
 tests/
 ├── unit/                          # 単体テスト
 │   ├── like-manager.test.js
