@@ -38,11 +38,8 @@ test.describe('キャラクタースワイプ機能', () => {
     // 右スワイプを実行
     await mainPage.swipeRight();
     
-    // スワイプ後の処理を待つ
-    await page.waitForTimeout(1000);
-    
     // 新しいキャラクターカードが表示されることを確認
-    await expect(mainPage.characterCard).toBeVisible();
+    await expect(mainPage.characterCard).toBeVisible({ timeout: 3000 });
   });
 
   test('左スワイプでパス機能が動作する', async () => {
@@ -52,11 +49,8 @@ test.describe('キャラクタースワイプ機能', () => {
     // 左スワイプを実行
     await mainPage.swipeLeft();
     
-    // スワイプ後の処理を待つ
-    await page.waitForTimeout(1000);
-    
     // 新しいキャラクターカードが表示されることを確認
-    await expect(mainPage.characterCard).toBeVisible();
+    await expect(mainPage.characterCard).toBeVisible({ timeout: 3000 });
     
     // 異なるキャラクターが表示されることを確認（データが十分にある場合）
     const newCharacter = await mainPage.getCurrentCharacterName();
@@ -72,11 +66,8 @@ test.describe('キャラクタースワイプ機能', () => {
     // いいねボタンをクリック
     await mainPage.clickLike();
     
-    // クリック後の処理を待つ
-    await page.waitForTimeout(1000);
-    
     // 新しいキャラクターカードが表示されることを確認
-    await expect(mainPage.characterCard).toBeVisible();
+    await expect(mainPage.characterCard).toBeVisible({ timeout: 3000 });
   });
 
   test('パスボタンクリックが動作する', async () => {
@@ -86,11 +77,8 @@ test.describe('キャラクタースワイプ機能', () => {
     // パスボタンをクリック
     await mainPage.clickPass();
     
-    // クリック後の処理を待つ
-    await page.waitForTimeout(1000);
-    
     // 新しいキャラクターカードが表示されることを確認
-    await expect(mainPage.characterCard).toBeVisible();
+    await expect(mainPage.characterCard).toBeVisible({ timeout: 3000 });
   });
 
   test('キャラクターカードが無限にスワイプできる', async () => {
@@ -107,8 +95,8 @@ test.describe('キャラクタースワイプ機能', () => {
         await mainPage.swipeLeft();
       }
       
-      // 次のカードの読み込みを待つ
-      await page.waitForTimeout(500);
+      // 次のカードが読み込まれることを確認
+      await expect(mainPage.characterCard).toBeVisible({ timeout: 2000 });
     }
     
     // 最後にもキャラクターカードが表示されていることを確認

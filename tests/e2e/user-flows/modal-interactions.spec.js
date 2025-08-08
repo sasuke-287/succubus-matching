@@ -82,7 +82,12 @@ test.describe('モーダルインタラクション', () => {
     const initialLikeCount = await characterModal.getLikeCount();
     await characterModal.likeButton.focus();
     await page.keyboard.press('Enter');
-    await page.waitForTimeout(1000);
+    
+    // いいね数の変化を待つ
+    await expect(async () => {
+      const currentCount = await characterModal.getLikeCount();
+      return currentCount > initialLikeCount;
+    }).toPass({ timeout: 3000 });
     
     const newLikeCount = await characterModal.getLikeCount();
     expect(newLikeCount).toBeGreaterThan(initialLikeCount);
@@ -94,7 +99,8 @@ test.describe('モーダルインタラクション', () => {
     
     // モーダルの表示を待つ
     await expect(characterModal.modal).toBeVisible();
-    await page.waitForTimeout(500); // アニメーション完了を待つ
+    // アニメーションの完了を待つ
+    await page.waitForLoadState('networkidle');
     
     // モーダルが完全に表示されていることを確認
     const opacity = await characterModal.modal.evaluate(el => 
@@ -127,7 +133,8 @@ test.describe('モーダルインタラクション', () => {
       // スクロール可能な要素がある場合のテスト
       await modalContent.hover();
       await page.mouse.wheel(0, 100);
-      await page.waitForTimeout(500);
+      // スクロール完了を待つ
+      await page.waitForLoadState('domcontentloaded');
       
       // モーダルが閉じていないことを確認
       await expect(characterModal.modal).toBeVisible();
@@ -175,7 +182,12 @@ test.describe('モーダルインタラクション', () => {
     const initialLikeCount = await characterModal.getLikeCount();
     
     await characterModal.likeButton.tap();
-    await page.waitForTimeout(1000);
+    
+    // いいね数の変化を待つ
+    await expect(async () => {
+      const currentCount = await characterModal.getLikeCount();
+      return currentCount > initialLikeCount;
+    }).toPass({ timeout: 3000 });
     
     const newLikeCount = await characterModal.getLikeCount();
     expect(newLikeCount).toBeGreaterThan(initialLikeCount);
