@@ -1,7 +1,7 @@
 /**
  * テストユーティリティ関数集
  */
-import { readFileSync, writeFileSync, existsSync, unlinkSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, unlinkSync, mkdirSync } from 'fs';
 import path from 'path';
 
 /**
@@ -37,9 +37,7 @@ export class TestDataManager {
     
     // ディレクトリが存在しない場合は作成
     if (!existsSync(dir)) {
-      import('fs').then(fs => {
-        fs.mkdirSync(dir, { recursive: true });
-      });
+      mkdirSync(dir, { recursive: true });
     }
 
     writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');

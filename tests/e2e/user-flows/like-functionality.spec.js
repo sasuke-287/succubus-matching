@@ -33,8 +33,11 @@ test.describe('いいね機能', () => {
     // いいねボタンをクリック
     await characterModal.clickLike();
     
-    // いいね処理の完了を待つ
-    await page.waitForTimeout(1000);
+    // いいね数の変化を待つ
+    await expect(async () => {
+      const currentCount = await characterModal.getLikeCount();
+      return currentCount > initialLikeCount;
+    }).toPass({ timeout: 5000 });
     
     // いいね数が増加することを確認
     const newLikeCount = await characterModal.getLikeCount();
@@ -80,16 +83,19 @@ test.describe('いいね機能', () => {
       
       // いいねをする
       await characterModal.clickLike();
-      await page.waitForTimeout(500);
+      // いいね処理の完了を待つ
+      await page.waitForLoadState('networkidle');
       
       // モーダルを閉じる
       await characterModal.close();
-      await page.waitForTimeout(500);
+      // モーダルが完全に閉じるのを待つ
+      await expect(characterModal.modal).not.toBeVisible();
       
       // 次のキャラクターに移動（最後の場合は除く）
       if (i < likeCount - 1) {
         await mainPage.swipeRight();
-        await page.waitForTimeout(1000);
+        // 次のキャラクターカードの読み込みを待つ
+        await expect(mainPage.characterCard).toBeVisible();
       }
     }
     
@@ -111,13 +117,14 @@ test.describe('いいね機能', () => {
     
     // オフライン状態でいいねを試行
     await characterModal.clickLike();
-    await page.waitForTimeout(1000);
+    // オフライン操作のキューイングを待つ
+    await page.waitForLoadState('domcontentloaded');
     
     // ネットワークを再有効化
     await context.setOffline(false);
     
     // オンライン復帰時の同期を待つ
-    await page.waitForTimeout(2000);
+    await page.waitForLoadState('networkidle');
     
     // いいね数が更新されることを確認
     const finalLikeCount = await characterModal.getLikeCount();
