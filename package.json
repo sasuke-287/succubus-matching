@@ -4,13 +4,13 @@
   "description": "魅惑のサキュバスマッチングアプリ",
   "main": "server.js",
   "scripts": {
-    "dev": "NODE_ENV=development node server.js",
-    "start": "NODE_ENV=production node server.js",
-    "test": "NODE_ENV=test vitest run",
-    "test:watch": "NODE_ENV=test vitest",
-    "test:e2e": "NODE_ENV=test playwright test",
-    "test:coverage": "NODE_ENV=test vitest run --coverage",
-    "build": "npm run test && NODE_ENV=production npm run lint",
+    "dev": "cross-env NODE_ENV=development node server.js",
+    "start": "cross-env NODE_ENV=production node server.js",
+    "test": "cross-env NODE_ENV=test vitest run",
+    "test:watch": "cross-env NODE_ENV=test vitest",
+    "test:e2e": "cross-env NODE_ENV=test playwright test",
+    "test:coverage": "cross-env NODE_ENV=test vitest run --coverage",
+    "build": "npm run test && cross-env NODE_ENV=production npm run lint",
     "lint": "echo 'Linting would go here...'",
     "format": "echo 'Formatting would go here...'",
     "install-deps": "npm install express chokidar ws dotenv",
@@ -34,6 +34,7 @@
   "devDependencies": {
     "@playwright/test": "^1.40.0",
     "@vitest/ui": "^1.0.0",
+    "cross-env": "^10.0.0",
     "jsdom": "^23.0.0",
     "playwright": "^1.40.0",
     "vitest": "^1.0.0"

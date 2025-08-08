@@ -8,7 +8,7 @@ const { WebSocketServer } = require("ws");
 const securityMiddleware = require('./middleware/security');
 const http = require("http");
 const fs = require("fs").promises;
-const config = require("./config");;
+const config = require("./config");
 
 const app = express();
 // 設定をアプリケーションローカルに保存
@@ -30,10 +30,9 @@ if (config.security && config.security.strictMode) {
   app.use(securityMiddleware.validateRequestBody);
 }
 const PORT = config.server.port;
-const HOST = config.server.host;;
+const HOST = config.server.host;
 
-// JSONボディパーサーを追加
-app.use(express.json());
+
 
 // 静的ファイルを提供
 app.use(express.static("."));
@@ -734,7 +733,7 @@ server.listen(PORT, config.server.host, async () => {
       console.log(`🔐 セキュリティ機能: ${securityFeatures.join(', ')}`);
     }
   }
-};);
+});
 
 // Ctrl+Cでサーバーを停止
 process.on("SIGINT", () => {
