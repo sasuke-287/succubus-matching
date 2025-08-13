@@ -1,8 +1,9 @@
+const path = require("path");
+
 // 環境変数を読み込み
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const express = require("express");
-const path = require("path");
 const chokidar = require("chokidar");
 const { WebSocketServer } = require("ws");
 const http = require("http");
@@ -15,12 +16,15 @@ const PORT = config.server.port;
 // JSONボディパーサーを追加
 app.use(express.json());
 
-// 静的ファイルを提供
-app.use(express.static("."));
+// 静的ファイルを提供（publicディレクトリを指定）
+app.use(express.static(path.join(__dirname, "..", "public")));
+
+// データファイルを静的ファイルとして提供
+app.use("/data", express.static(path.join(__dirname, "..", "data")));
 
 // データファイルのパス
-const LIKES_DATA_FILE = path.join(__dirname, "likes-data.json");
-const SUCCUBI_DATA_FILE = path.join(__dirname, "succubi-data.json");
+const LIKES_DATA_FILE = path.join(__dirname, "..", "data", "likes-data.json");
+const SUCCUBI_DATA_FILE = path.join(__dirname, "..", "data", "succubi-data.json");
 
 // ログ機能
 function logInfo(message) {
@@ -606,7 +610,7 @@ app.get("/api/characters", async (req, res) => {
 
 // メインページ
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
+  res.sendFile(path.join(__dirname, "..", "public", "index.html"));
 });
 
 // HTTPサーバーを作成

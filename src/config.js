@@ -8,8 +8,8 @@ const config = {
 
   // ファイル監視設定
   watcher: {
-    // 監視対象ファイル
-    watchFiles: ['*.html', '*.css', '*.js', '*.json'],
+    // 監視対象ファイル（新しいディレクトリ構造に対応）
+    watchFiles: ['public/*.html', 'public/*.css', 'public/*.js', 'data/*.json', 'src/*.js'],
     // 除外パターン
     ignored: /node_modules/,
     // 監視オプション
