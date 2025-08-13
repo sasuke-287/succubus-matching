@@ -16,6 +16,19 @@ const PORT = config.server.port;
 // JSONボディパーサーを追加
 app.use(express.json());
 
+// セッション設定（簡易版）
+const session = require('express-session');
+app.use(session({
+  secret: 'succubus-realm-secret-key',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // 開発環境用
+}));
+
+// いいね機能のAPIルートを追加（既存のファイルベースAPIを使用）
+// const { router: likesRouter } = require('./routes/likes');
+// app.use('/api/likes', likesRouter);
+
 // 静的ファイルを提供（publicディレクトリを指定）
 app.use(express.static(path.join(__dirname, "..", "public")));
 
