@@ -93,7 +93,7 @@ DEBUG=false        # デバッグモード
 
 ### 設定ファイル
 
-`config.js`でアプリケーションの詳細設定を変更できます：
+`src/config.js`でアプリケーションの詳細設定を変更できます：
 
 - サーバー設定（ポート、ホスト）
 - ファイル監視設定（監視対象、除外パターン）
@@ -109,6 +109,18 @@ succubus-realm/
 │   └── specs/          # 機能仕様書
 ├── .vscode/            # VS Code設定
 ├── node_modules/       # npm依存関係
+├── public/             # 静的ファイル（フロントエンド）
+│   ├── index.html      # メインHTML
+│   ├── style.css       # スタイルシート
+│   ├── script.js       # クライアントサイドJS
+│   └── assets/         # 画像などのアセット（将来用）
+├── src/                # サーバーサイドコード
+│   ├── server.js       # Express サーバー
+│   ├── config.js       # アプリケーション設定
+│   └── utils/          # ユーティリティ関数（将来の拡張用）
+├── data/               # データファイル
+│   ├── succubi-data.json # サキュバスデータ
+│   └── likes-data.json # いいねデータ
 ├── tests/              # テストディレクトリ
 │   ├── unit/           # 単体テスト
 │   ├── integration/    # 統合テスト
@@ -116,17 +128,11 @@ succubus-realm/
 │   ├── __fixtures__/   # テストデータ
 │   ├── __helpers__/    # テストヘルパー
 │   └── test-setup.js   # テストセットアップ
-├── config.js           # アプリケーション設定
-├── server.js           # Express サーバー
 ├── package.json        # プロジェクト設定
 ├── package-lock.json   # 依存関係ロック
 ├── vitest.config.js    # Vitestテスト設定
 ├── playwright.config.js # Playwrightテスト設定
-├── index.html          # メインHTML
-├── style.css           # スタイルシート
-├── script.js           # クライアントサイドJS
-├── succubi-data.json   # サキュバスデータ
-├── likes-data.json     # いいねデータ
+├── .env                # 環境変数
 ├── .env.example        # 環境変数テンプレート
 ├── .gitignore          # Git除外設定
 ├── Dockerfile          # Docker設定ファイル
@@ -147,12 +153,13 @@ succubus-realm/
 
 ### ファイル監視
 
-以下のファイルタイプが自動監視されます：
+以下のディレクトリとファイルタイプが自動監視されます：
 
-- `*.html`
-- `*.css`
-- `*.js`
-- `*.json`
+- `public/*.html` - HTMLファイル
+- `public/*.css` - スタイルシート
+- `public/*.js` - クライアントサイドJavaScript
+- `data/*.json` - データファイル
+- `src/*.js` - サーバーサイドJavaScript
 
 ファイルを変更すると、接続中のブラウザが自動的にリロードされます。
 
