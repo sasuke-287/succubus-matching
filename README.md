@@ -88,6 +88,7 @@ Dockerがインストールされている場合、以下のコマンドでコ�
 PORT=3000          # サーバーポート
 HOST=localhost     # サーバーホスト
 NODE_ENV=development  # 環境設定
+SESSION_SECRET=your-super-secret-session-key-here  # セッション暗号化キー
 DEBUG=false        # デバッグモード
 ```
 
@@ -99,6 +100,18 @@ DEBUG=false        # デバッグモード
 - ファイル監視設定（監視対象、除外パターン）
 - WebSocket 設定（タイムアウト、ハートビート）
 - 開発環境設定（ホットリロード、ログレベル）
+
+### セキュリティ設定
+
+#### セッション管理
+- **SESSION_SECRET**: 本番環境では必ず強力なランダム文字列に変更
+- **Cookie設定**: 本番環境では自動的にHTTPS必須、XSS/CSRF対策有効
+- **GDPR対応**: 不要なセッションは初期化しない設定
+- **セッション期限**: 24時間で自動期限切れ
+
+#### 本番環境での注意点
+- `NODE_ENV=production` 設定時は自動的にセキュアモードに切り替わります
+- プロキシ環境（Heroku、AWS等）では `trust proxy` が自動設定されます
 
 ## 📁 プロジェクト構成
 
