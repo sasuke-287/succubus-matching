@@ -26,7 +26,7 @@ const MOCK_SUCCUBI_DATA = {
 };
 
 // テスト用ファイルパス
-const TEST_LIKES_FILE = path.join(__dirname, 'test-likes-data.json');
+const TEST_LIKES_FILE = path.join(__dirname, '..', '..', 'data', 'likes-data.json');
 const TEST_SUCCUBI_FILE = path.join(__dirname, 'test-succubi-data.json');
 
 describe('エラーハンドリング機能テスト', () => {

@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // テスト用のファイルパス
-const TEST_LIKES_DATA_FILE = path.join(__dirname, '..', 'likes-data.json');
+const TEST_LIKES_DATA_FILE = path.join(__dirname, '..', '..', 'data', 'likes-data.json');
 const TEST_SUCCUBI_DATA_FILE = path.join(__dirname, '..', 'succubi-data.json');
 const BACKUP_LIKES_DATA_FILE = `${TEST_LIKES_DATA_FILE}.backup`;
 

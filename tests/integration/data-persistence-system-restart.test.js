@@ -4,7 +4,7 @@ const path = require('path');
 const { spawn } = require('child_process');
 
 // テスト用のファイルパス
-const TEST_LIKES_DATA_FILE = path.join(__dirname, '..', 'likes-data.json');
+const TEST_LIKES_DATA_FILE = path.join(__dirname, '..', '..', 'data', 'likes-data.json');
 const TEST_SUCCUBI_DATA_FILE = path.join(__dirname, '..', 'succubi-data.json');
 const BACKUP_LIKES_DATA_FILE = `${TEST_LIKES_DATA_FILE}.backup`;
 const BACKUP_SUCCUBI_DATA_FILE = `${TEST_SUCCUBI_DATA_FILE}.backup`;

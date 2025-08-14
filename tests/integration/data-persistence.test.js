@@ -12,9 +12,9 @@ const http = require('http');
 const CONFIG = {
   server: { host: 'localhost', port: 3000 },
   files: {
-    likes: path.join(__dirname, '..', 'likes-data.json'),
-    succubi: path.join(__dirname, '..', 'succubi-data.json'),
-    backup: path.join(__dirname, '..', 'likes-data.json.backup')
+    likes: path.join(__dirname, '..', '..', 'data', 'likes-data.json'),
+    succubi: path.join(__dirname, '..', '..', 'data', 'succubi-data.json'),
+    backup: path.join(__dirname, '..', '..', 'data', 'likes-data.json.backup')
   }
 };
 

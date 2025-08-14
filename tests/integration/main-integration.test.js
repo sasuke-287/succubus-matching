@@ -6,7 +6,7 @@ class IntegrationTester {
   constructor() {
     this.testResults = [];
     this.succubiDataPath = path.join(__dirname, '..', 'succubi-data.json');
-    this.likesDataPath = path.join(__dirname, '..', 'likes-data.json');
+    this.likesDataPath = path.join(__dirname, '..', '..', 'data', 'likes-data.json');
   }
 
   // テスト結果をログ出力

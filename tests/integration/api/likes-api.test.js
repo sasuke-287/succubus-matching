@@ -17,9 +17,9 @@ const TEST_CONFIG = {
     baseUrl: 'http://localhost:3000'
   },
   files: {
-    likesData: path.join(process.cwd(), 'likes-data.json'),
-    succubiData: path.join(process.cwd(), 'succubi-data.json'),
-    testBackup: path.join(process.cwd(), 'likes-data-test-backup.json')
+    likesData: path.join(process.cwd(), 'data', 'likes-data.json'),
+    succubiData: path.join(process.cwd(), 'data', 'succubi-data.json'),
+    testBackup: path.join(process.cwd(), 'data', 'likes-data-test-backup.json')
   }
 };
 
