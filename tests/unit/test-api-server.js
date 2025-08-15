@@ -269,8 +269,6 @@ describe('API サーバー機能', () => {
           if (!characterId) {
             return res.status(400).json({ error: '無効なキャラクターIDです' });
           }
-          
-          // 正常処理...
         } catch (error) {
           res.status(500).json({ error: 'いいね数の増加に失敗しました' });
         }

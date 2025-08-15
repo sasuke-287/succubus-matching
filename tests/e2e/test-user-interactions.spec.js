@@ -23,7 +23,7 @@ test.describe('ユーザーインタラクション E2E テスト', () => {
     await page.goto('/');
     
     // キャラクターデータの読み込み完了を待機
-    await page.waitForSelector('.character-card', { timeout: 10000 });
+    await page.waitForSelector('.character-card');
     
     // キャラクターカードの存在確認
     const characterCards = page.locator('.character-card');
@@ -41,7 +41,7 @@ test.describe('ユーザーインタラクション E2E テスト', () => {
     await page.goto('/');
     
     // キャラクターカードの読み込み完了を待機
-    await page.waitForSelector('.character-card', { timeout: 10000 });
+    await page.waitForSelector('.character-card', );
     
     const firstCard = page.locator('.character-card').first();
     const likeBtn = firstCard.locator('.like-btn');
@@ -67,7 +67,7 @@ test.describe('ユーザーインタラクション E2E テスト', () => {
     await page.goto('/');
     
     // キャラクターカードの読み込み完了を待機
-    await page.waitForSelector('.character-card', { timeout: 10000 });
+    await page.waitForSelector('.character-card', );
     
     const firstCard = page.locator('.character-card').first();
     const characterName = await firstCard.locator('.character-name').textContent();
@@ -97,7 +97,7 @@ test.describe('ユーザーインタラクション E2E テスト', () => {
     await page.goto('/');
     
     // キャラクターカードの読み込み完了を待機
-    await page.waitForSelector('.character-card', { timeout: 10000 });
+    await page.waitForSelector('.character-card', );
     
     const firstCard = page.locator('.character-card').first();
     const characterId = await firstCard.getAttribute('data-character-id');
@@ -119,7 +119,7 @@ test.describe('ユーザーインタラクション E2E テスト', () => {
     await page.goto('/');
     
     // キャラクターカードの読み込み完了を待機
-    await page.waitForSelector('.character-card', { timeout: 10000 });
+    await page.waitForSelector('.character-card', );
     
     const firstCard = page.locator('.character-card').first();
     const likeBtn = firstCard.locator('.like-btn');
@@ -132,7 +132,7 @@ test.describe('ユーザーインタラクション E2E テスト', () => {
     
     // ページをリロード
     await page.reload();
-    await page.waitForSelector('.character-card', { timeout: 10000 });
+    await page.waitForSelector('.character-card', );
     
     // リロード後もいいね済み状態が保持されていることを確認
     const reloadedFirstCard = page.locator('.character-card').first();
@@ -146,7 +146,7 @@ test.describe('ユーザーインタラクション E2E テスト', () => {
     await page.goto('/');
     
     // キャラクターカードの読み込み完了を待機
-    await page.waitForSelector('.character-card', { timeout: 10000 });
+    await page.waitForSelector('.character-card', );
     
     const characterCards = page.locator('.character-card');
     const cardCount = await characterCards.count();
@@ -178,7 +178,7 @@ test.describe('ユーザーインタラクション E2E テスト', () => {
     await page.goto('/');
     
     // エラーメッセージの表示確認
-    await expect(page.locator('.error-message')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('.error-message')).toBeVisible();
     await expect(page.locator('.error-message')).toContainText('データの読み込みに失敗しました');
   });
 
@@ -188,7 +188,7 @@ test.describe('ユーザーインタラクション E2E テスト', () => {
     await page.goto('/');
     
     // キャラクターカードの読み込み完了を待機
-    await page.waitForSelector('.character-card', { timeout: 10000 });
+    await page.waitForSelector('.character-card', );
     
     // モバイル表示の確認
     const characterGrid = page.locator('#character-grid');
@@ -211,7 +211,7 @@ test.describe('ユーザーインタラクション E2E テスト', () => {
     await page.goto('/');
     
     // キャラクターカードの読み込み完了を待機
-    await page.waitForSelector('.character-card', { timeout: 10000 });
+    await page.waitForSelector('.character-card', );
     
     // Tabキーでナビゲーション
     await page.keyboard.press('Tab');
@@ -231,7 +231,7 @@ test.describe('ユーザーインタラクション E2E テスト', () => {
     await page.goto('/');
     
     // キャラクターカードの読み込み完了を待機
-    await page.waitForSelector('.character-card', { timeout: 10000 });
+    await page.waitForSelector('.character-card', );
     
     // 基本的なアクセシビリティ要素の確認
     const firstCard = page.locator('.character-card').first();

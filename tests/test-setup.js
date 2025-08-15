@@ -20,14 +20,17 @@ Object.defineProperty(window, 'location', {
   writable: true
 });
 
-// WebSocket のモック
+// WebSocket のモック（実際にサーバーで使用されているため）
 global.WebSocket = vi.fn(() => ({
   onopen: null,
   onmessage: null,
   onclose: null,
   onerror: null,
   send: vi.fn(),
-  close: vi.fn()
+  close: vi.fn(),
+  readyState: 1, // OPEN状態
+  OPEN: 1,
+  CLOSED: 3
 }));
 
 // localStorage のモック
@@ -38,15 +41,6 @@ const localStorageMock = {
   clear: vi.fn()
 };
 global.localStorage = localStorageMock;
-
-// console のスパイ設定（テスト中のログを制御）
-global.console = {
-  ...console,
-  log: vi.fn(),
-  error: vi.fn(),
-  warn: vi.fn(),
-  info: vi.fn()
-};
 
 // テスト前の共通セットアップ
 beforeEach(() => {

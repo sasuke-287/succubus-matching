@@ -6,7 +6,7 @@ import fetch from 'node-fetch';
 describe('フロントエンド・API統合テスト', () => {
   let serverProcess;
   const baseURL = 'http://localhost:3000';
-  const testTimeout = 30000;
+  const testTimeout = 15000;
 
   beforeAll(async () => {
     // テスト用サーバーを起動
@@ -19,7 +19,7 @@ describe('フロントエンド・API統合テスト', () => {
     await new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         reject(new Error('サーバーの起動がタイムアウトしました'));
-      }, 10000);
+      }, 8000);
 
       const checkServer = async () => {
         try {
@@ -28,10 +28,10 @@ describe('フロントエンド・API統合テスト', () => {
             clearTimeout(timeout);
             resolve();
           } else {
-            setTimeout(checkServer, 500);
+            setTimeout(checkServer, 300);
           }
         } catch (error) {
-          setTimeout(checkServer, 500);
+          setTimeout(checkServer, 300);
         }
       };
 
@@ -245,7 +245,7 @@ describe('フロントエンド・API統合テスト', () => {
       const newCount = incrementData.totalLikes;
       
       // 少し待機してから再度取得（ファイル書き込み完了を待つ）
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 50));
       
       // 新しいリクエストで同じ値が取得できることを確認
       const verifyResponse = await fetch(`${baseURL}/api/likes/count/${characterId}`);
@@ -280,7 +280,7 @@ describe('フロントエンド・API統合テスト', () => {
       const endTime = Date.now();
       
       expect(response.ok).toBe(true);
-      expect(endTime - startTime).toBeLessThan(5000); // 5秒以内
+      expect(endTime - startTime).toBeLessThan(3000); // 3秒以内
     }, testTimeout);
   });
 });

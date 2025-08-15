@@ -8,9 +8,9 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
-  timeout: 30000,
+  timeout: 15000,
   expect: {
-    timeout: 5000
+    timeout: 3000
   },
   use: {
     baseURL: 'http://localhost:3000',
@@ -44,6 +44,6 @@ export default defineConfig({
     command: 'npm start',
     port: 3000,
     reuseExistingServer: !process.env.CI,
-    timeout: 120000
+    timeout: 60000
   },
 });

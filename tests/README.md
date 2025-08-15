@@ -11,12 +11,9 @@ tests/
 │   ├── test-frontend-ui.js         # フロントエンドUI機能
 │   └── test-api-server.js          # APIサーバー機能
 ├── integration/                    # 統合テスト
-│   ├── test-frontend-api-integration.js # フロント・API統合
-│   └── main-integration.test.js    # 既存システム統合
+│   └── test-frontend-api-integration.js # フロント・API統合
 ├── e2e/                           # E2Eテスト
 │   └── test-user-interactions.spec.js # ユーザーインタラクション
-├── __fixtures__/                  # テストデータ
-├── __helpers__/                   # テストヘルパー
 └── test-setup.js                  # テスト環境設定
 ```
 
@@ -110,22 +107,3 @@ npm start
 2. サーバーが正常に起動していることを確認
 3. ポート3000が使用可能であることを確認
 
-## 継続的インテグレーション
-
-GitHub Actionsでの自動テスト実行設定例：
-
-```yaml
-name: Tests
-on: [push, pull_request]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-      - run: npm install
-      - run: npm run install-test-deps
-      - run: npm run test:all
-```

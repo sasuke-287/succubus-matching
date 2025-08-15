@@ -8,12 +8,12 @@
     "dev": "node src/server.js",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:frontend": "vitest run tests/unit/test-frontend-api-client.js tests/unit/test-frontend-ui.js",
+    "test:frontend": "vitest run tests/unit/test-frontend-*.js",
     "test:api": "vitest run tests/unit/test-api-server.js",
-    "test:integration": "vitest run tests/integration/test-frontend-api-integration.js",
+    "test:integration": "vitest run tests/integration/",
     "test:e2e": "playwright test",
     "test:all": "npm run test && npm run test:e2e",
-    "install-deps": "npm install express chokidar ws dotenv",
+    "install-deps": "npm install express chokidar ws dotenv express-session",
     "install-test-deps": "npm install --save-dev vitest @vitest/ui playwright @playwright/test jsdom node-fetch"
   },
   "keywords": [
