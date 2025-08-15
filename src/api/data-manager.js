@@ -57,7 +57,7 @@ class DataManager {
   }  
 // ファイルロック機能
   async acquireFileLock(filePath) {
-    if (this.fileLocks.has(filePath)) {
+    while (this.fileLocks.has(filePath)) {
       // 既存のロックが解除されるまで待機
       await this.fileLocks.get(filePath);
     }
@@ -67,6 +67,12 @@ class DataManager {
       resolveLock = resolve;
     });
     
+    // 再度チェックしてから設定（double-checked locking）
+    if (this.fileLocks.has(filePath)) {
+      await this.fileLocks.get(filePath);
+      return this.acquireFileLock(filePath); // 再帰的にリトライ
+    }
+
     this.fileLocks.set(filePath, lockPromise);
     
     return () => {
@@ -288,7 +294,7 @@ class DataManager {
           continue;
         }
         
-        if (!likesData.likes[character.id.toString()]) {
+        if (likesData.likes[character.id.toString()] === undefined) {
           likesData.likes[character.id.toString()] = 0;
           needsUpdate = true;
         }

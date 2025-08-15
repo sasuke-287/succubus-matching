@@ -34,8 +34,13 @@ if (process.env.NODE_ENV === "production") {
 
 app.use(
   session({
-    secret:
-      process.env.SESSION_SECRET || "fallback-dev-secret-change-in-production",
+    secret: (() => {
+      if (process.env.NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
+        console.error('本番環境ではSESSION_SECRETの設定が必須です');
+        process.exit(1);
+      }
+      return process.env.SESSION_SECRET || "fallback-dev-secret-change-in-production";
+    })(),
     resave: false,
     saveUninitialized: false, // GDPR対応：不要なセッションは初期化しない
     cookie: {
@@ -73,7 +78,9 @@ app.get("/api/characters", async (req, res) => {
 app.use(express.static(path.join(__dirname, "..", "public")));
 
 // データファイルを静的ファイルとして提供
-app.use("/data", express.static(path.join(__dirname, "..", "data")));
+if (process.env.NODE_ENV !== 'production') {
+  app.use("/data", express.static(path.join(__dirname, "..", "data")));
+}
 
 // ログ機能
 function logInfo(message) {
