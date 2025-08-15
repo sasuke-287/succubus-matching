@@ -9,8 +9,8 @@ export default defineConfig({
     hookTimeout: 10000,
     teardownTimeout: 10000,
     include: [
-      'tests/unit/**/*.test.js',
-      'tests/integration/**/*.test.js'
+      'tests/unit/**/*.js',
+      'tests/integration/**/*.js'
     ],
     coverage: {
       provider: 'v8',

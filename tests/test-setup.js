@@ -1,8 +1,14 @@
 // テスト環境のセットアップ
 import { vi } from 'vitest';
+import fetch from 'node-fetch';
 
 // グローバルなモック設定
 global.fetch = vi.fn();
+
+// Node.js環境でのfetch polyfill
+if (!globalThis.fetch) {
+  globalThis.fetch = fetch;
+}
 
 // DOM環境のセットアップ
 Object.defineProperty(window, 'location', {
