@@ -8,9 +8,13 @@
     "dev": "node src/server.js",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:frontend": "vitest run tests/unit/test-frontend-*.js",
+    "test:api": "vitest run tests/unit/test-api-server.js",
+    "test:integration": "vitest run tests/integration/",
     "test:e2e": "playwright test",
-    "install-deps": "npm install express chokidar ws dotenv",
-    "install-test-deps": "npm install --save-dev vitest @vitest/ui playwright @playwright/test jsdom"
+    "test:all": "npm run test && npm run test:e2e",
+    "install-deps": "npm install express chokidar ws dotenv express-session",
+    "install-test-deps": "npm install --save-dev vitest @vitest/ui playwright @playwright/test jsdom node-fetch"
   },
   "keywords": [
     "succubus",
@@ -24,6 +28,7 @@
     "chokidar": "^3.6.0",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
+    "express-session": "^1.18.2",
     "node-fetch": "^3.3.2",
     "ws": "^8.18.3"
   },
