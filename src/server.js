@@ -9,9 +9,17 @@ const { WebSocketServer } = require("ws");
 const http = require("http");
 const fs = require("fs").promises;
 const config = require("./config");
+const DataManager = require("./api/data-manager");
+const LikesAPI = require("./api/likes-api");
+const CharactersAPI = require("./api/characters-api");
 
 const app = express();
 const PORT = config.server.port;
+
+// API クラスのインスタンスを作成
+const dataManager = new DataManager();
+const likesAPI = new LikesAPI();
+const charactersAPI = new CharactersAPI();
 
 // JSONボディパーサーを追加
 app.use(express.json());
@@ -40,24 +48,32 @@ app.use(
   })
 );
 
-// いいね機能のAPIルートを追加（既存のファイルベースAPIを使用）
-// const { router: likesRouter } = require('./routes/likes');
-// app.use('/api/likes', likesRouter);
+// API ルーターを設定
+app.use("/api/likes", likesAPI.getRouter());
+app.use("/api/character", charactersAPI.getRouter());
+
+// /api/characters ルート（全キャラクター取得用）
+app.get("/api/characters", async (req, res) => {
+  try {
+    const charactersWithLikes = await dataManager.getAllCharactersWithLikes();
+    res.json({
+      success: true,
+      ...charactersWithLikes,
+    });
+  } catch (error) {
+    console.error("全キャラクター詳細取得処理でエラーが発生しました", error);
+    res.status(500).json({
+      success: false,
+      error: "内部サーバーエラー",
+    });
+  }
+});
 
 // 静的ファイルを提供（publicディレクトリを指定）
 app.use(express.static(path.join(__dirname, "..", "public")));
 
 // データファイルを静的ファイルとして提供
 app.use("/data", express.static(path.join(__dirname, "..", "data")));
-
-// データファイルのパス
-const LIKES_DATA_FILE = path.join(__dirname, "..", "data", "likes-data.json");
-const SUCCUBI_DATA_FILE = path.join(
-  __dirname,
-  "..",
-  "data",
-  "succubi-data.json"
-);
 
 // ログ機能
 function logInfo(message) {
@@ -119,11 +135,11 @@ function logSystemStatus() {
   // ファイルアクセス状況の確認
   Promise.all([
     fs
-      .access(LIKES_DATA_FILE)
+      .access(path.join(__dirname, "..", "data", "likes-data.json"))
       .then(() => true)
       .catch(() => false),
     fs
-      .access(SUCCUBI_DATA_FILE)
+      .access(path.join(__dirname, "..", "data", "succubi-data.json"))
       .then(() => true)
       .catch(() => false),
   ]).then(([likesExists, succubiExists]) => {
@@ -134,571 +150,6 @@ function logSystemStatus() {
     );
   });
 }
-
-// likes-data.json の初期化機能
-async function initializeLikesData() {
-  try {
-    // ファイルが存在するかチェック
-    await fs.access(LIKES_DATA_FILE);
-    logInfo("likes-data.json が既に存在します");
-  } catch (error) {
-    // ファイルが存在しない場合、初期データを作成
-    logInfo("likes-data.json が存在しないため、初期化します");
-    const initialData = { likes: {} };
-    await writeLikesData(initialData);
-  }
-}
-
-// データ読み込み関数（ユーティリティ関数を使用）
-async function readLikesData() {
-  try {
-    const data = await DataUtils.safeReadFile(LIKES_DATA_FILE, { likes: {} });
-
-    // データ構造の検証
-    const validation = DataUtils.validateLikesData(data);
-    if (!validation.valid) {
-      logError(
-        `likes-data.json の構造が不正です: ${validation.error}。修復します。`
-      );
-      return { likes: {} };
-    }
-
-    return data;
-  } catch (error) {
-    logError("いいねデータの読み込みに失敗しました", error);
-    // デフォルトデータを返す
-    return { likes: {} };
-  }
-}
-
-// データ書き込み関数（ユーティリティ関数を使用）
-async function writeLikesData(data) {
-  try {
-    // データ検証
-    const validation = DataUtils.validateLikesData(data);
-    if (!validation.valid) {
-      logError(`書き込み前のデータ検証に失敗: ${validation.error}`);
-      return false;
-    }
-
-    const success = await DataUtils.safeWriteFile(LIKES_DATA_FILE, data);
-    if (success) {
-      logInfo("いいねデータを保存しました");
-    }
-    return success;
-  } catch (error) {
-    logError("いいねデータの保存に失敗しました", error);
-    return false;
-  }
-}
-
-// ファイルロック管理
-const fileLocks = new Map();
-
-// ファイルロック機能
-async function acquireFileLock(filePath) {
-  if (fileLocks.has(filePath)) {
-    // 既存のロックが解除されるまで待機
-    await fileLocks.get(filePath);
-  }
-
-  let resolveLock;
-  const lockPromise = new Promise((resolve) => {
-    resolveLock = resolve;
-  });
-
-  fileLocks.set(filePath, lockPromise);
-
-  return () => {
-    fileLocks.delete(filePath);
-    resolveLock();
-  };
-}
-
-// データ読み書き用のユーティリティ関数群
-const DataUtils = {
-  // 安全なファイル読み込み（バックアップ機能付き）
-  async safeReadFile(filePath, defaultData = null) {
-    try {
-      const data = await fs.readFile(filePath, "utf8");
-      return JSON.parse(data);
-    } catch (error) {
-      logError(`ファイル読み込みエラー: ${filePath}`, error);
-      if (defaultData !== null) {
-        logInfo(`デフォルトデータを使用します: ${filePath}`);
-        return defaultData;
-      }
-      throw error;
-    }
-  },
-
-  // 安全なファイル書き込み（バックアップ機能付き、ロック機能付き）
-  async safeWriteFile(filePath, data) {
-    const releaseLock = await acquireFileLock(filePath);
-
-    try {
-      // バックアップファイルを作成
-      const backupPath = `${filePath}.backup`;
-      try {
-        await fs.copyFile(filePath, backupPath);
-      } catch (backupError) {
-        // バックアップ作成に失敗しても処理を続行
-        logError(`バックアップ作成に失敗: ${filePath}`, backupError);
-      }
-
-      // データを書き込み
-      await fs.writeFile(filePath, JSON.stringify(data, null, 2), "utf8");
-      logInfo(`ファイル書き込み成功: ${filePath}`);
-      return true;
-    } catch (error) {
-      logError(`ファイル書き込みエラー: ${filePath}`, error);
-      return false;
-    } finally {
-      releaseLock();
-    }
-  },
-
-  // データ検証機能
-  validateLikesData(data) {
-    if (!data || typeof data !== "object") {
-      return { valid: false, error: "データがオブジェクトではありません" };
-    }
-
-    if (!data.likes || typeof data.likes !== "object") {
-      return {
-        valid: false,
-        error: "likes プロパティが存在しないか、オブジェクトではありません",
-      };
-    }
-
-    // 各いいね数が数値かチェック
-    for (const [id, count] of Object.entries(data.likes)) {
-      if (!Number.isInteger(count) || count < 0) {
-        return {
-          valid: false,
-          error: `ID ${id} のいいね数が無効です: ${count}`,
-        };
-      }
-    }
-
-    return { valid: true };
-  },
-
-  // データマージ機能
-  mergeLikesData(existingData, newData) {
-    const merged = { likes: { ...existingData.likes } };
-
-    for (const [id, count] of Object.entries(newData.likes)) {
-      merged.likes[id] = Math.max(merged.likes[id] || 0, count);
-    }
-
-    return merged;
-  },
-};
-
-// キャラクターデータ読み込み関数
-async function readSuccubiData() {
-  try {
-    const data = await fs.readFile(SUCCUBI_DATA_FILE, "utf8");
-    return JSON.parse(data);
-  } catch (error) {
-    logError("キャラクターデータの読み込みに失敗しました", error);
-    return { succubi: [] };
-  }
-}
-
-// ID ベースでのキャラクター情報取得機能
-async function getCharacterById(characterId) {
-  try {
-    const succubiData = await readSuccubiData();
-    const character = succubiData.succubi.find(
-      (s) => s.id === parseInt(characterId)
-    );
-
-    if (!character) {
-      logError(`キャラクター ID ${characterId} が見つかりません`);
-      return null;
-    }
-
-    return character;
-  } catch (error) {
-    logError("キャラクター取得処理でエラーが発生しました", error);
-    return null;
-  }
-}
-
-// 全キャラクターのIDリストを取得
-async function getAllCharacterIds() {
-  try {
-    const succubiData = await readSuccubiData();
-    return succubiData.succubi.map((s) => s.id);
-  } catch (error) {
-    logError("キャラクターIDリスト取得でエラーが発生しました", error);
-    return [];
-  }
-}
-
-// succubi-data.json と likes-data.json の関連付け機能
-async function getCharacterWithLikes(characterId) {
-  try {
-    const character = await getCharacterById(characterId);
-    if (!character) {
-      return null;
-    }
-
-    const likesData = await readLikesData();
-    const likeCount = likesData.likes[characterId.toString()] || 0;
-
-    return {
-      ...character,
-      likeCount,
-    };
-  } catch (error) {
-    logError("キャラクターといいね数の関連付けでエラーが発生しました", error);
-    return null;
-  }
-}
-
-// 全キャラクターにいいね数を関連付けて取得
-async function getAllCharactersWithLikes() {
-  try {
-    const succubiData = await readSuccubiData();
-    const likesData = await readLikesData();
-
-    const charactersWithLikes = succubiData.succubi.map((character) => ({
-      ...character,
-      likeCount: likesData.likes[character.id.toString()] || 0,
-    }));
-
-    return { succubi: charactersWithLikes };
-  } catch (error) {
-    logError("全キャラクターといいね数の関連付けでエラーが発生しました", error);
-    return { succubi: [] };
-  }
-}
-
-// データ整合性チェック関数
-async function ensureDataIntegrity() {
-  try {
-    const succubiData = await readSuccubiData();
-    const likesData = await readLikesData();
-
-    let needsUpdate = false;
-    let integrityIssues = [];
-
-    // 各キャラクターのいいね数を初期化（存在しない場合）
-    for (const character of succubiData.succubi) {
-      if (!character.id) {
-        integrityIssues.push(
-          `キャラクター "${character.name}" にIDが設定されていません`
-        );
-        continue;
-      }
-
-      if (!likesData.likes[character.id.toString()]) {
-        likesData.likes[character.id.toString()] = 0;
-        needsUpdate = true;
-      }
-    }
-
-    // 存在しないキャラクターのいいねデータをクリーンアップ
-    const validIds = succubiData.succubi.map((s) => s.id.toString());
-    for (const likeId of Object.keys(likesData.likes)) {
-      if (!validIds.includes(likeId)) {
-        delete likesData.likes[likeId];
-        needsUpdate = true;
-        integrityIssues.push(
-          `存在しないキャラクターID ${likeId} のいいねデータを削除しました`
-        );
-      }
-    }
-
-    if (needsUpdate) {
-      await writeLikesData(likesData);
-      logInfo("データ整合性チェック完了: データを修復しました");
-    }
-
-    if (integrityIssues.length > 0) {
-      logInfo("データ整合性の問題:");
-      integrityIssues.forEach((issue) => logInfo(`  - ${issue}`));
-    }
-
-    return true;
-  } catch (error) {
-    logError("データ整合性チェックに失敗しました", error);
-    return false;
-  }
-}
-
-// API エンドポイント: いいね数を増加（エラーハンドリング強化版）
-app.post("/api/likes/increment", async (req, res) => {
-  const startTime = Date.now();
-
-  try {
-    const { characterId } = req.body;
-
-    // 入力値検証
-    if (!characterId) {
-      logWarning("いいね増加API: characterId が未指定");
-      return res.status(400).json({
-        success: false,
-        error: "characterId が必要です",
-        code: "MISSING_CHARACTER_ID",
-      });
-    }
-
-    if (!Number.isInteger(characterId) || characterId <= 0) {
-      logWarning(`いいね増加API: 無効なcharacterID: ${characterId}`);
-      return res.status(400).json({
-        success: false,
-        error: "有効なキャラクターIDを指定してください",
-        code: "INVALID_CHARACTER_ID",
-      });
-    }
-
-    // キャラクターの存在確認
-    const character = await getCharacterById(characterId);
-    if (!character) {
-      logWarning(`いいね増加API: 存在しないキャラクターID: ${characterId}`);
-      return res.status(404).json({
-        success: false,
-        error: "指定されたキャラクターが見つかりません",
-        code: "CHARACTER_NOT_FOUND",
-      });
-    }
-
-    // データを読み込み、更新、保存
-    const likesData = await readLikesData();
-    const characterIdStr = characterId.toString();
-
-    // 現在のいいね数を取得（存在しない場合は0）
-    const currentLikes = likesData.likes[characterIdStr] || 0;
-
-    // いいね数を増加
-    likesData.likes[characterIdStr] = currentLikes + 1;
-
-    // データを保存
-    const saveSuccess = await writeLikesData(likesData);
-
-    if (saveSuccess) {
-      const processingTime = Date.now() - startTime;
-      logInfo(
-        `キャラクター ${characterId} (${character.name}) のいいね数を増加: ${currentLikes} -> ${likesData.likes[characterIdStr]} (処理時間: ${processingTime}ms)`
-      );
-
-      res.json({
-        success: true,
-        totalLikes: likesData.likes[characterIdStr],
-        characterName: character.name,
-        processingTime,
-      });
-    } else {
-      logError(
-        `いいね増加API: データ保存に失敗 (キャラクターID: ${characterId})`
-      );
-      res.status(500).json({
-        success: false,
-        error:
-          "データの保存に失敗しました。しばらく時間をおいてから再度お試しください",
-        code: "SAVE_FAILED",
-      });
-    }
-  } catch (error) {
-    const processingTime = Date.now() - startTime;
-    logError(
-      `いいね増加処理でエラーが発生しました (処理時間: ${processingTime}ms)`,
-      error
-    );
-
-    // エラーの種類に応じて適切なレスポンスを返す
-    if (error.code === "ENOSPC") {
-      res.status(507).json({
-        success: false,
-        error: "サーバーの容量が不足しています。管理者にお問い合わせください",
-        code: "INSUFFICIENT_STORAGE",
-      });
-    } else if (error.code === "EACCES") {
-      res.status(500).json({
-        success: false,
-        error:
-          "サーバーでアクセス権限エラーが発生しました。管理者にお問い合わせください",
-        code: "ACCESS_DENIED",
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        error:
-          "内部サーバーエラーが発生しました。しばらく時間をおいてから再度お試しください",
-        code: "INTERNAL_ERROR",
-      });
-    }
-  }
-});
-
-// API エンドポイント: 特定キャラクターのいいね数を取得（エラーハンドリング強化版）
-app.get("/api/likes/count/:characterId", async (req, res) => {
-  const startTime = Date.now();
-
-  try {
-    const { characterId } = req.params;
-    const characterIdNum = parseInt(characterId);
-
-    // 入力値検証
-    if (!characterId || isNaN(characterIdNum) || characterIdNum <= 0) {
-      logWarning(`いいね数取得API: 無効なキャラクターID: ${characterId}`);
-      return res.status(400).json({
-        success: false,
-        error: "有効なキャラクターIDを指定してください",
-        code: "INVALID_CHARACTER_ID",
-      });
-    }
-
-    // キャラクターの存在確認
-    const character = await getCharacterById(characterIdNum);
-    if (!character) {
-      logWarning(
-        `いいね数取得API: 存在しないキャラクターID: ${characterIdNum}`
-      );
-      return res.status(404).json({
-        success: false,
-        error: "指定されたキャラクターが見つかりません",
-        code: "CHARACTER_NOT_FOUND",
-      });
-    }
-
-    const likesData = await readLikesData();
-    const characterIdStr = characterIdNum.toString();
-    const totalLikes = likesData.likes[characterIdStr] || 0;
-
-    const processingTime = Date.now() - startTime;
-    logInfo(
-      `キャラクター ${characterIdNum} (${character.name}) のいいね数を取得: ${totalLikes} (処理時間: ${processingTime}ms)`
-    );
-
-    res.json({
-      success: true,
-      characterId: characterIdNum,
-      characterName: character.name,
-      totalLikes,
-      processingTime,
-    });
-  } catch (error) {
-    const processingTime = Date.now() - startTime;
-    logError(
-      `いいね数取得処理でエラーが発生しました (処理時間: ${processingTime}ms)`,
-      error
-    );
-
-    res.status(500).json({
-      success: false,
-      error:
-        "内部サーバーエラーが発生しました。しばらく時間をおいてから再度お試しください",
-      code: "INTERNAL_ERROR",
-    });
-  }
-});
-
-// API エンドポイント: 全キャラクターのいいね数を取得（エラーハンドリング強化版）
-app.get("/api/likes/all", async (req, res) => {
-  const startTime = Date.now();
-
-  try {
-    const likesData = await readLikesData();
-
-    // 数値キーに変換
-    const likes = {};
-    let totalLikes = 0;
-    let characterCount = 0;
-
-    for (const [characterId, count] of Object.entries(likesData.likes)) {
-      const numericId = parseInt(characterId);
-      if (!isNaN(numericId)) {
-        likes[numericId] = count;
-        totalLikes += count;
-        characterCount++;
-      }
-    }
-
-    const processingTime = Date.now() - startTime;
-    logInfo(
-      `全いいね数を取得: ${characterCount}キャラクター, 総いいね数: ${totalLikes} (処理時間: ${processingTime}ms)`
-    );
-
-    res.json({
-      success: true,
-      likes,
-      statistics: {
-        totalCharacters: characterCount,
-        totalLikes,
-        averageLikes:
-          characterCount > 0
-            ? Math.round((totalLikes / characterCount) * 100) / 100
-            : 0,
-      },
-      processingTime,
-    });
-  } catch (error) {
-    const processingTime = Date.now() - startTime;
-    logError(
-      `全いいね数取得処理でエラーが発生しました (処理時間: ${processingTime}ms)`,
-      error
-    );
-
-    res.status(500).json({
-      success: false,
-      error:
-        "内部サーバーエラーが発生しました。しばらく時間をおいてから再度お試しください",
-      code: "INTERNAL_ERROR",
-    });
-  }
-});
-
-// API エンドポイント: 特定キャラクターの詳細情報（いいね数含む）を取得
-app.get("/api/character/:characterId", async (req, res) => {
-  try {
-    const { characterId } = req.params;
-
-    const characterWithLikes = await getCharacterWithLikes(
-      parseInt(characterId)
-    );
-
-    if (!characterWithLikes) {
-      return res.status(404).json({
-        success: false,
-        error: "キャラクターが見つかりません",
-      });
-    }
-
-    res.json({
-      success: true,
-      character: characterWithLikes,
-    });
-  } catch (error) {
-    logError("キャラクター詳細取得処理でエラーが発生しました", error);
-    res.status(500).json({
-      success: false,
-      error: "内部サーバーエラー",
-    });
-  }
-});
-
-// API エンドポイント: 全キャラクターの詳細情報（いいね数含む）を取得
-app.get("/api/characters", async (req, res) => {
-  try {
-    const charactersWithLikes = await getAllCharactersWithLikes();
-
-    res.json({
-      success: true,
-      ...charactersWithLikes,
-    });
-  } catch (error) {
-    logError("全キャラクター詳細取得処理でエラーが発生しました", error);
-    res.status(500).json({
-      success: false,
-      error: "内部サーバーエラー",
-    });
-  }
-});
 
 // メインページ
 app.get("/", (req, res) => {
@@ -759,11 +210,11 @@ server.listen(PORT, config.server.host, async () => {
 
   // likes-data.json の初期化
   logInfo("likes-data.json の初期化を開始します...");
-  await initializeLikesData();
+  await dataManager.initializeLikesData();
 
   // データ整合性チェックを実行
   logInfo("データ整合性チェックを開始します...");
-  await ensureDataIntegrity();
+  await dataManager.ensureDataIntegrity();
 
   // 定期的なシステム状態監視を開始（5分間隔）
   setInterval(() => {

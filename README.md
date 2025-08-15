@@ -137,10 +137,10 @@ succubus-realm/
 ├── src/                # サーバーサイドコード（バックエンド）
 │   ├── server.js       # Express サーバー
 │   ├── config.js       # アプリケーション設定
-│   ├── api/            # API ロジック
-│   │   └── LikeAPI.js  # いいね機能API
-│   └── routes/         # ルーティング
-│       └── likes.js    # いいね機能ルート
+│   └── api/            # API層
+│       ├── DataManager.js    # JSON読み書き・データ管理
+│       ├── LikesAPI.js       # いいね機能API
+│       └── CharactersAPI.js  # キャラクター情報API
 ├── data/               # データファイル
 │   ├── succubi-data.json # サキュバスデータ
 │   └── likes-data.json # いいねデータ
@@ -206,8 +206,6 @@ succubus-realm/
 - `public/js/*.js` - フロントエンドモジュール
 - `data/*.json` - データファイル
 - `src/*.js` - サーバーサイドJavaScript
-- `src/api/*.js` - APIロジック
-- `src/routes/*.js` - ルーティング
 
 ファイルを変更すると、接続中のブラウザが自動的にリロードされます。
 
