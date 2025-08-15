@@ -9,14 +9,20 @@ const securityMiddleware = require('./middleware/security');
 const http = require("http");
 const fs = require("fs").promises;
 const config = require("./config");
+const helmet = require("helmet");
 
 const app = express();
 // プロキシ環境での適切なHTTPS判定のため信頼設定を有効化（本番環境のみ）
 if (config.isProduction && config.security && config.security.forceHTTPS) {
-  app.set('trust proxy', true);
+  app.set('trust proxy', 1);
 }
 // 設定をアプリケーションローカルに保存
 app.locals.config = config;
+
+// helmetミドルウェアを適用（本番環境のみ、既存CSPを使用するためCSPは無効化）
+if (config.isProduction && config.security?.enableHelmet) {
+  app.use(helmet({ contentSecurityPolicy: false }));
+}
 
 // セキュリティミドルウェアを適用
 if (config.security) {
